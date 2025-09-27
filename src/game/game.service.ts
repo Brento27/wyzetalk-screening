@@ -10,12 +10,11 @@ import { CardType, GridPosition } from '../types/card.types';
 
 export interface StartGameResponse {
   gameId: string;
-  /*board: Array<{
-    type: string;
+  board: Array<{
     position: string;
     isFlipped: boolean;
     isMatched: boolean;
-  }>;*/
+  }>;
 }
 
 export interface SubmitCardsResponse {
@@ -92,14 +91,11 @@ export class GameService {
     // Return the game ID and initial board state (all cards face-down)
     return {
       gameId: savedGame.gameId,
-      /*
       board: savedGame.board.map(card => ({
-        type: card.type,
         position: card.position,
         isFlipped: false, // Always return face-down for initial state
         isMatched: card.isMatched,
       })),
-      */
     };
   }
 
