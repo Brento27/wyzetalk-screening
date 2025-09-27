@@ -178,7 +178,12 @@ export class GameService {
     return {
       isMatch,
       matchedPairs: game.matchedPairs,
-      board: game.board,
+      board: game.board.map(card => ({
+        type: card.isMatched ? card.type : undefined,
+        position: card.position,
+        isFlipped: card.isFlipped,
+        isMatched: card.isMatched,
+      })),
       attempts: game.attempts,
       isCompleted: game.isCompleted,
       cardsAttempted: {
