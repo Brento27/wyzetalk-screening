@@ -1,0 +1,74 @@
+services:
+  # MongoDB service
+  mongo:
+    image: mongo:7.0
+    container_name: wyzetalk-mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password123
+      MONGO_INITDB_DATABASE: wyzetalk_db
+    volumes:
+      - ./data/db:/data/db
+      - ./data/configdb:/data/configdb
+    networks:
+      - wyzetalk-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # NestJS API service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: wyzetalk-api
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      MONGODB_URI: mongodb://admin:password123@mongo:27017/wyzetalk_db?authSource=admin
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - wyzetalk-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Test service
+  test:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: wyzetalk-test
+    environment:
+      NODE_ENV: test
+      MONGODB_URI: mongodb://admin:password123@mongo:27017/wyzetalk_test_db?authSource=admin
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - wyzetalk-network
+    volumes:
+      - ./coverage:/app/coverage
+    command: ["pnpm", "test"]
+
+networks:
+  wyzetalk-network:
+    driver: bridge
+
+volumes:
+  mongo_data:
+    driver: local

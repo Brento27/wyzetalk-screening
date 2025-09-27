@@ -1,0 +1,29 @@
+# Test Dockerfile for running tests in Docker
+FROM node:20-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package.json pnpm-lock.yaml ./
+
+# Install pnpm and all dependencies (including dev dependencies)
+RUN npm install -g pnpm
+RUN pnpm install --frozen-lockfile
+
+# Copy source code
+COPY . .
+
+# Build the application
+RUN pnpm run build
+
+# Create non-root user for security
+RUN addgroup -g 1001 -S nestjs && adduser -S nestjs -u 1001
+RUN chown -R nestjs:nestjs /app
+USER nestjs
+
+# Set environment variables
+ENV NODE_ENV=test
+
+# Default command runs tests
+CMD ["pnpm", "test"]
