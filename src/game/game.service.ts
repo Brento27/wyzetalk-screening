@@ -19,6 +19,12 @@ export interface StartGameResponse {
 
 export interface SubmitCardsResponse {
   isMatch: boolean;
+  board: Array<{
+    type?: CardType;
+    position: string;
+    isFlipped: boolean;
+    isMatched: boolean;
+  }>;
   matchedPairs: CardType[];
   attempts: number;
   isCompleted: boolean;
@@ -172,6 +178,7 @@ export class GameService {
     return {
       isMatch,
       matchedPairs: game.matchedPairs,
+      board: game.board,
       attempts: game.attempts,
       isCompleted: game.isCompleted,
       cardsAttempted: {
