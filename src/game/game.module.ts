@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { GameService } from './game.service';
-import { GameController } from './game.controller';
+import { GameController, LeaderboardController } from './game.controller';
 import { Game, GameSchema } from '../schemas/game.schema';
 import { Attempt, AttemptSchema } from '../schemas/attempt.schema';
 
@@ -13,6 +13,6 @@ import { Attempt, AttemptSchema } from '../schemas/attempt.schema';
     ]),
   ],
   providers: [GameService],
-  controllers: [GameController]
+  controllers: [GameController, LeaderboardController]
 })
 export class GameModule {}

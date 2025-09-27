@@ -35,6 +35,32 @@ export interface SubmitCardsResponse {
   };
 }
 
+export interface GameStateResponse {
+  gameId: string;
+  board: Array<{
+    type?: CardType; // Only present for matched cards
+    position: GridPosition;
+    isFlipped: boolean;
+    isMatched: boolean;
+  }>;
+  matchedPairs: CardType[];
+  attempts: number;
+  isCompleted: boolean;
+  startTime: Date;
+  endTime?: Date;
+  gridSize: string;
+}
+
+export interface LeaderboardEntry {
+  gameId: string;
+  attempts: number;
+  timeTaken: number; // in milliseconds
+}
+
+export interface LeaderboardResponse {
+  leaderboard: LeaderboardEntry[];
+}
+
 @Injectable()
 export class GameService {
   constructor(
@@ -163,5 +189,49 @@ export class GameService {
         },
       },
     };
+  }
+
+  async getGameState(gameId: string): Promise<GameStateResponse> {
+    // Find the game by gameId
+    const game = await this.gameModel.findOne({ gameId });
+    if (!game) {
+      throw new NotFoundException(`Game with ID ${gameId} not found`);
+    }
+
+    // Return sanitized game state - only reveal CardType for matched cards
+    return {
+      gameId: game.gameId,
+      board: game.board.map(card => ({
+        type: card.isMatched ? card.type : undefined, // Only show type for matched cards
+        position: card.position,
+        isFlipped: card.isFlipped,
+        isMatched: card.isMatched,
+      })),
+      matchedPairs: game.matchedPairs,
+      attempts: game.attempts,
+      isCompleted: game.isCompleted,
+      startTime: game.startTime,
+      endTime: game.endTime,
+      gridSize: game.gridSize,
+    };
+  }
+
+  async getLeaderboard(): Promise<LeaderboardResponse> {
+    // Query completed games, sort by attempts (ascending), then by time taken (ascending)
+    const completedGames = await this.gameModel
+      .find({ isCompleted: true })
+      .select('gameId attempts startTime endTime')
+      .sort({ attempts: 1, startTime: 1 }) // Sort by attempts first, then by startTime for ties
+      .limit(5)
+      .lean(); // Use lean() for better performance since we don't need Mongoose documents
+
+    // Transform the results to include calculated timeTaken
+    const leaderboard: LeaderboardEntry[] = completedGames.map(game => ({
+      gameId: game.gameId,
+      attempts: game.attempts,
+      timeTaken: game.endTime ? game.endTime.getTime() - game.startTime.getTime() : 0,
+    }));
+
+    return { leaderboard };
   }
 }
