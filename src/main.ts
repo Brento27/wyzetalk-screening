@@ -9,6 +9,19 @@ import { MongoSerializationInterceptor } from './common/interceptors/serializati
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  // Enable CORS
+  app.enableCors({
+    origin: [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'http://localhost:8080',
+      'https://memory-api.brento.co.za',
+    ],
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
+  });
+
   // Global validation pipe
   app.useGlobalPipes(new ValidationPipe({
     transform: true,
