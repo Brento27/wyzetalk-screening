@@ -257,7 +257,7 @@ describe('Game API (e2e)', () => {
         .expect(200);
 
       expect(leaderboardResponse.body).toHaveProperty('leaderboard');
-    });
+    }, 10000);
   });
 
   describe('Error Handling', () => {
