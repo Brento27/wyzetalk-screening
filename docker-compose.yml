@@ -33,7 +33,7 @@ services:
       - "9000:3000"
     environment:
       NODE_ENV: production
-      PORT: 9000
+      PORT: 3000
       MONGODB_URI: mongodb://admin:password123@mongo:27017/wyzetalk_db?authSource=admin
     depends_on:
       mongo:
@@ -41,7 +41,7 @@ services:
     networks:
       - wyzetalk-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/"]
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
       interval: 30s
       timeout: 10s
       retries: 3
