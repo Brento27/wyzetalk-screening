@@ -3,8 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { Game, GameSchema } from './schemas/game.schema';
-import { Attempt, AttemptSchema } from './schemas/attempt.schema';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -21,11 +20,7 @@ import { Attempt, AttemptSchema } from './schemas/attempt.schema';
       }),
       inject: [ConfigService],
     }),
-    // Game schemas
-    MongooseModule.forFeature([
-      { name: Game.name, schema: GameSchema },
-      { name: Attempt.name, schema: AttemptSchema },
-    ]),
+    GameModule,
   ],
   controllers: [AppController],
   providers: [AppService],

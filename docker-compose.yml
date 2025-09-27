@@ -30,7 +30,7 @@ services:
     container_name: wyzetalk-api
     restart: always
     ports:
-      - "9000:3000"
+      - "3000:3000"
     environment:
       NODE_ENV: production
       PORT: 3000
@@ -48,22 +48,22 @@ services:
       start_period: 30s
 
   # Test service
-  test:
-    build:
-      context: .
-      dockerfile: Dockerfile.test
-    container_name: wyzetalk-test
-    environment:
-      NODE_ENV: test
-      MONGODB_URI: mongodb://admin:password123@mongo:27017/wyzetalk_test_db?authSource=admin
-    depends_on:
-      mongo:
-        condition: service_healthy
-    networks:
-      - wyzetalk-network
-    volumes:
-      - ./coverage:/app/coverage
-    command: ["pnpm", "test"]
+  #test:
+  #  build:
+  #    context: .
+  #    dockerfile: Dockerfile.test
+  #  container_name: wyzetalk-test
+  #  environment:
+  #    NODE_ENV: test
+  #    MONGODB_URI: mongodb://admin:password123@mongo:27017/wyzetalk_test_db?authSource=admin
+  #  depends_on:
+  #    mongo:
+  #      condition: service_healthy
+  #  networks:
+  #    - wyzetalk-network
+  #  volumes:
+  #    - ./coverage:/app/coverage
+  #  command: ["pnpm", "test"]
 
 networks:
   wyzetalk-network:
