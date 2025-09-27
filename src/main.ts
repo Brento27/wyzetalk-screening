@@ -16,6 +16,7 @@ async function bootstrap() {
       'http://localhost:3001',
       'http://localhost:8080',
       'https://memory-api.brento.co.za',
+      'https://memory.brento.co.za',
     ],
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization'],
